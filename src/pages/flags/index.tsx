@@ -15,12 +15,13 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import Grid from '@mui/material/Grid';
 import { countries, countriesTypes } from '../../util/countries';
 import Input from '../../components/input';
 
 const style = {
   position: 'absolute' as const,
-  top: '20vh',
+  // top: '20vh',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '80%',
@@ -50,7 +51,6 @@ export default function FlagsTable(): React.ReactElement {
 
   return (
     <>
-
       <Input onChange={requestSearch} searchable />
       <Paper>
         <TableContainer>
@@ -105,19 +105,70 @@ export default function FlagsTable(): React.ReactElement {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        style={{ top: '350px' }}
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {selected?.nome}
-          </Typography>
-          <Input
-            searchable={false}
-            inputLabel="Capital"
-            onChange={setTeste}
-            defaultValue={selected?.capital || 'Essa é uma capital'}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Flag code="USA" height="100%" />
+              </Grid>
+            </Grid>
+            <Grid item xs={8}>
+              <Grid container spacing={2}>
+                <Grid item sm={12}>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                    {selected?.nome}
+                  </Typography>
+                </Grid>
+                <Grid item sm={6}>
+                  <Input
+                    searchable={false}
+                    inputLabel="Nome"
+                    onChange={setTeste}
+                    defaultValue={selected?.nome}
+                  />
+                </Grid>
+                <Grid item sm={6}>
+                  <Input
+                    searchable={false}
+                    inputLabel="Capital"
+                    onChange={setTeste}
+                    defaultValue={selected?.capital}
+                  />
+                </Grid>
+                <Grid item sm={4}>
+                  <Input
+                    searchable={false}
+                    inputLabel="Área"
+                    onChange={setTeste}
+                    defaultValue={selected?.area}
+                  />
+                </Grid>
+                <Grid item sm={4}>
+                  <Input
+                    searchable={false}
+                    inputLabel="População"
+                    onChange={setTeste}
+                    defaultValue={selected?.populacao}
+                  />
+                </Grid>
+                <Grid item sm={4}>
+                  <Input
+                    searchable={false}
+                    inputLabel="Top-Level"
+                    onChange={setTeste}
+                    defaultValue={selected?.tld}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     </>
