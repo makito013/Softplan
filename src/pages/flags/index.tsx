@@ -22,7 +22,7 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import { useQuery } from '@apollo/client';
 import Input from '../../components/input';
-import { countries, countriesTypes } from '../../util/countries';
+import { countriesTypes } from '../../util/countries';
 import { GET_COUNTRIES } from '../../operations/queries/getCountries';
 import { GET_NAME } from '../../operations/queries/getName';
 import { allMutations } from '../../operations/mutations';
@@ -40,7 +40,8 @@ const style = {
 };
 
 export default function FlagsTable(): React.ReactElement {
-  const [rows, setRows] = useState<countriesTypes[]>(useQuery(GET_COUNTRIES).data.countries);
+  const countries = useQuery(GET_COUNTRIES);
+  const [rows, setRows] = useState<countriesTypes[]>(countries.data.countries);
   const [selected, setSelected] = useState<countriesTypes>();
   const [searched, setSearched] = useState<string>('');
   const [open, setOpen] = React.useState<boolean>(false);
@@ -50,8 +51,8 @@ export default function FlagsTable(): React.ReactElement {
   const { name } = useQuery(GET_NAME).data;
 
   const requestSearch = (searchedVal: string): void => {
-    let filteredRows = countries.filter((row) => row?.nome.toLowerCase().includes(searchedVal.toLowerCase()));
-    if (filteredRows?.length === 0) filteredRows = countries.filter((row) => row?.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
+    let filteredRows = countries.data.countries.filter((row: countriesTypes) => row?.nome.toLowerCase().includes(searchedVal.toLowerCase()));
+    if (filteredRows?.length === 0) filteredRows = countries.data.countries.filter((row: countriesTypes) => row?.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
     setResult(0);
     setRows(filteredRows);
   };
@@ -63,14 +64,18 @@ export default function FlagsTable(): React.ReactElement {
   };
 
   const onPressButton = (): void => {
+    console.log(selected);
     if (selected) {
-      allMutations.editCountries(selected);
+      setRows(allMutations.editCountries(selected));
     }
+    console.log(countries.data.countries);
     setOpen(false);
   };
 
   const handleInputChange = (e: string, index: string): void => {
-    console.log('entrei');
+    const newValue = { ...selected, [index]: e } as countriesTypes;
+    setSelected(newValue);
+    console.log(selected);
   };
 
   return (
@@ -192,9 +197,9 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={6}>
                   <Input
-                    disabled={typeModal === 'view'}
+                    disabled
                     inputLabel="Nome"
-                    onChange={(e) => handleInputChange(e, 'name')}
+                    onChange={(e) => handleInputChange(e, 'nome')}
                     defaultValue={selected?.nome}
                   />
                 </Grid>
@@ -202,7 +207,7 @@ export default function FlagsTable(): React.ReactElement {
                   <Input
                     disabled={typeModal === 'view'}
                     inputLabel="Capital"
-                    onChange={setTeste}
+                    onChange={(e) => handleInputChange(e, 'capital')}
                     defaultValue={selected?.capital}
                   />
                 </Grid>
@@ -210,7 +215,7 @@ export default function FlagsTable(): React.ReactElement {
                   <Input
                     disabled={typeModal === 'view'}
                     inputLabel="Área"
-                    onChange={setTeste}
+                    onChange={(e) => handleInputChange(e, 'area')}
                     defaultValue={selected?.area}
                   />
                 </Grid>
@@ -218,15 +223,15 @@ export default function FlagsTable(): React.ReactElement {
                   <Input
                     disabled={typeModal === 'view'}
                     inputLabel="População"
-                    onChange={setTeste}
+                    onChange={(e) => handleInputChange(e, 'populacao')}
                     defaultValue={selected?.populacao}
                   />
                 </Grid>
                 <Grid item sm={4}>
                   <Input
                     disabled={typeModal === 'view'}
-                    inputLabel="Top-Level"
-                    onChange={setTeste}
+                    inputLabel="Domínio"
+                    onChange={(e) => handleInputChange(e, 'tld')}
                     defaultValue={selected?.tld}
                   />
                 </Grid>
