@@ -14,6 +14,7 @@ interface inputParams {
   disabled?: boolean,
   inputLabel?: string,
   defaultValue?: string,
+  id?: string,
 }
 
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
@@ -47,6 +48,7 @@ const Input: FC<inputParams> = ({
   disabled,
   inputLabel,
   defaultValue,
+  id,
 }) => {
   if (searchable) {
     return (
@@ -83,6 +85,9 @@ const Input: FC<inputParams> = ({
         placeholder={placeholder || ''}
         onChange={(e) => onChange(e.target.value)}
         defaultValue={defaultValue || ''}
+        inputProps={{
+          'data-testid': id || '',
+        }}
       />
     </FormControl>
   );

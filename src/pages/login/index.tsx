@@ -12,7 +12,7 @@ import { Redirect } from 'react-router-dom';
 import Input from '../../components/input';
 import { allMutations } from '../../operations/mutations';
 
-export default function BasicCard(): React.ReactElement {
+export default function Login(): React.ReactElement {
   const [nome, setNome] = React.useState('');
   const [redirect, setRedirect] = React.useState(false);
 
@@ -42,8 +42,9 @@ export default function BasicCard(): React.ReactElement {
             </Typography>
             <div style={{ width: '100%' }}>
               <Input
-                onChange={setNome}
+                onChange={(e) => setNome(e.trim())}
                 defaultValue={nome}
+                id="input-name"
               />
             </div>
             <Button

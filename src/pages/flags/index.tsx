@@ -20,6 +20,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
 import { useQuery } from '@apollo/client';
 import Input from '../../components/input';
 import { countriesTypes } from '../../util/countries';
@@ -64,18 +65,15 @@ export default function FlagsTable(): React.ReactElement {
   };
 
   const onPressButton = (): void => {
-    console.log(selected);
     if (selected) {
       setRows(allMutations.editCountries(selected));
     }
-    console.log(countries.data.countries);
     setOpen(false);
   };
 
   const handleInputChange = (e: string, index: string): void => {
-    const newValue = { ...selected, [index]: e } as countriesTypes;
+    const newValue = { ...selected, [index]: e.trim() } as countriesTypes;
     setSelected(newValue);
-    console.log(selected);
   };
 
   return (
@@ -129,6 +127,9 @@ export default function FlagsTable(): React.ReactElement {
                               <TableCell align="left">
                                 Próximos 5 resultados
                               </TableCell>
+                              <TableCell />
+                              <TableCell />
+                              <TableCell />
                             </TableRow>
                           );
                         }
@@ -239,10 +240,11 @@ export default function FlagsTable(): React.ReactElement {
                   <Button
                     variant="contained"
                     style={{ float: 'right' }}
-                    endIcon={<SendIcon />}
+                    endIcon={typeModal === 'view' ? <CloseIcon /> : <SendIcon />}
                     onClick={onPressButton}
+                    color={typeModal === 'view' ? 'error' : 'primary'}
                   >
-                    Continuar
+                    {typeModal === 'view' ? 'Fechar' : 'Salvar'}
                   </Button>
                 </Grid>
               </Grid>
