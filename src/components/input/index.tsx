@@ -52,16 +52,16 @@ const Input: FC<inputParams> = ({
     return (
       <Paper
         component="form"
-        style={{ border: '1px solid #A6A6A6' }}
+        style={{ border: '1px solid #e1e1e1', borderRadius: 10, margin: '10px 0 10px 0' }}
         sx={{
-          p: '2px 4px', display: 'flex', alignItems: 'center', width: '100%',
+          p: '2px 4px', display: 'flex', alignItems: 'center', width: '99%',
         }}
       >
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder={placeholder || 'Digite Para Pesquisar'}
           onChange={(e) => onChange(e.target.value)}
-          defaultValue
+          defaultValue={defaultValue || ''}
         />
         <IconButton sx={{ p: '10px' }} aria-label="search">
           <SearchIcon />
@@ -71,7 +71,7 @@ const Input: FC<inputParams> = ({
   }
 
   return (
-    <FormControl style={{ width: '100%', marginBottom: 20 }} sx={{ m: 1, minWidth: 120 }} variant="standard">
+    <FormControl style={{ width: '100%', margin: '20px 0 20px 0' }} sx={{ m: 1, minWidth: 120 }} variant="standard">
       {inputLabel
       && (
         <InputLabel style={{ fontWeight: 'bold', fontSize: 20 }} shrink>

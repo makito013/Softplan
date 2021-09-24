@@ -16,8 +16,12 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Grid from '@mui/material/Grid';
-import { countries, countriesTypes } from '../../util/countries';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
 import Input from '../../components/input';
+import { countries, countriesTypes } from '../../util/countries';
 
 const style = {
   position: 'absolute' as const,
@@ -37,71 +41,109 @@ export default function FlagsTable(): React.ReactElement {
   const [searched, setSearched] = useState<string>('');
   const [open, setOpen] = React.useState<boolean>(false);
   const [test, setTeste] = React.useState<string>('');
+  const [result, setResult] = React.useState<number>(0);
+  const [typeModal, setTypeModal] = React.useState<string>('view');
 
   const requestSearch = (searchedVal: string): void => {
     let filteredRows = countries.filter((row) => row.nome.toLowerCase().includes(searchedVal.toLowerCase()));
     if (filteredRows?.length === 0) filteredRows = countries.filter((row) => row.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
+    setResult(0);
     setRows(filteredRows);
   };
 
-  const selectCountry = (prop: countriesTypes): void => {
+  const selectCountry = (prop: countriesTypes, type: string): void => {
     setSelected(prop);
+    setTypeModal(type);
     setOpen(true);
   };
 
   return (
     <>
-      <Input onChange={requestSearch} searchable />
-      <Paper>
-        <TableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell />
-                <TableCell>País</TableCell>
-                <TableCell>Capital</TableCell>
-                <TableCell align="right">Sigla</TableCell>
-                <TableCell align="right" />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row, key) => {
-                if (key > 500) return <></>;
-                return (
-                  <TableRow key={row.nome}>
-                    <TableCell width={30} align="left">
-                      <Flag code={row.sigla3} height="16" />
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.nome}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row?.capital || 'Essa é uma capital'}
-                    </TableCell>
-                    <TableCell align="right">{row.sigla2}</TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Ver">
-                        <IconButton sx={{ p: '10px' }} aria-label="search">
-                          <RemoveRedEyeIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Editar">
-                        <IconButton
-                          sx={{ p: '10px' }}
-                          aria-label="search"
-                          onClick={() => selectCountry(row)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        backgroundColor: '#9eccf1',
+        minHeight: '100vh',
+        padding: 20,
+      }}
+      >
+        <Card style={{
+          width: '90%',
+          borderRadius: 16,
+          backgroundColor: '#fbf7f7',
+
+        }}
+        >
+          <CardContent>
+            <Input onChange={requestSearch} searchable />
+            <Paper style={{
+              marginTop: 30, borderRadius: 10, display: 'block', overflow: 'auto',
+            }}
+            >
+              <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell>País</TableCell>
+                      <TableCell>Capital</TableCell>
+                      <TableCell align="right">Sigla</TableCell>
+                      <TableCell align="right" />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row, key) => {
+                      if (key >= result + 5) {
+                        if (key === result + 5) {
+                          return (
+                            <TableRow style={{ cursor: 'pointer' }} onClick={() => setResult(result + 5)}>
+                              <TableCell />
+                              <TableCell align="left">
+                                Próximos 5 resultados
+                              </TableCell>
+                            </TableRow>
+                          );
+                        }
+                        return <></>;
+                      }
+                      return (
+                        <TableRow key={row.nome}>
+                          <TableCell width={30} align="left">
+                            <Flag code={row.sigla3} height="16" />
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            {row.nome}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            {row?.capital || 'Essa é uma capital'}
+                          </TableCell>
+                          <TableCell align="right">{row.sigla2}</TableCell>
+                          <TableCell align="right">
+                            <Tooltip title="Ver">
+                              <IconButton sx={{ p: '10px' }} onClick={() => selectCountry(row, 'view')}>
+                                <RemoveRedEyeIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Editar">
+                              <IconButton
+                                sx={{ p: '10px' }}
+                                onClick={() => selectCountry(row, 'edit')}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </CardContent>
+        </Card>
+      </div>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -116,7 +158,7 @@ export default function FlagsTable(): React.ReactElement {
                 justifyContent="center"
                 alignItems="center"
               >
-                <Flag code="USA" height="100%" />
+                <Flag code={selected?.sigla3} height="100%" />
               </Grid>
             </Grid>
             <Grid item xs={8}>
@@ -128,7 +170,7 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={6}>
                   <Input
-                    searchable={false}
+                    disabled={typeModal === 'view'}
                     inputLabel="Nome"
                     onChange={setTeste}
                     defaultValue={selected?.nome}
@@ -136,7 +178,7 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={6}>
                   <Input
-                    searchable={false}
+                    disabled={typeModal === 'view'}
                     inputLabel="Capital"
                     onChange={setTeste}
                     defaultValue={selected?.capital}
@@ -144,7 +186,7 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={4}>
                   <Input
-                    searchable={false}
+                    disabled={typeModal === 'view'}
                     inputLabel="Área"
                     onChange={setTeste}
                     defaultValue={selected?.area}
@@ -152,7 +194,7 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={4}>
                   <Input
-                    searchable={false}
+                    disabled={typeModal === 'view'}
                     inputLabel="População"
                     onChange={setTeste}
                     defaultValue={selected?.populacao}
@@ -160,7 +202,7 @@ export default function FlagsTable(): React.ReactElement {
                 </Grid>
                 <Grid item sm={4}>
                   <Input
-                    searchable={false}
+                    disabled={typeModal === 'view'}
                     inputLabel="Top-Level"
                     onChange={setTeste}
                     defaultValue={selected?.tld}
