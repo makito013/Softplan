@@ -15,12 +15,12 @@ export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        login: {
+        name: {
           read() {
             return loginVar();
           },
         },
-        flags: {
+        countries: {
           read() {
             return flagsVar();
           },

@@ -20,8 +20,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import { useQuery } from '@apollo/client';
 import Input from '../../components/input';
 import { countries, countriesTypes } from '../../util/countries';
+import { GET_COUNTRIES } from '../../operations/queries/getCountries';
+import { GET_NAME } from '../../operations/queries/getName';
+import { allMutations } from '../../operations/mutations';
 
 const style = {
   position: 'absolute' as const,
@@ -36,17 +40,18 @@ const style = {
 };
 
 export default function FlagsTable(): React.ReactElement {
-  const [rows, setRows] = useState<countriesTypes[]>(countries);
+  const [rows, setRows] = useState<countriesTypes[]>(useQuery(GET_COUNTRIES).data.countries);
   const [selected, setSelected] = useState<countriesTypes>();
   const [searched, setSearched] = useState<string>('');
   const [open, setOpen] = React.useState<boolean>(false);
   const [test, setTeste] = React.useState<string>('');
   const [result, setResult] = React.useState<number>(0);
   const [typeModal, setTypeModal] = React.useState<string>('view');
+  const { name } = useQuery(GET_NAME).data;
 
   const requestSearch = (searchedVal: string): void => {
-    let filteredRows = countries.filter((row) => row.nome.toLowerCase().includes(searchedVal.toLowerCase()));
-    if (filteredRows?.length === 0) filteredRows = countries.filter((row) => row.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
+    let filteredRows = countries.filter((row) => row?.nome.toLowerCase().includes(searchedVal.toLowerCase()));
+    if (filteredRows?.length === 0) filteredRows = countries.filter((row) => row?.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
     setResult(0);
     setRows(filteredRows);
   };
@@ -55,6 +60,17 @@ export default function FlagsTable(): React.ReactElement {
     setSelected(prop);
     setTypeModal(type);
     setOpen(true);
+  };
+
+  const onPressButton = (): void => {
+    if (selected) {
+      allMutations.editCountries(selected);
+    }
+    setOpen(false);
+  };
+
+  const handleInputChange = (e: string, index: string): void => {
+    console.log('entrei');
   };
 
   return (
@@ -76,6 +92,12 @@ export default function FlagsTable(): React.ReactElement {
         }}
         >
           <CardContent>
+            <Typography variant="h5" component="div">
+              Olá
+              {' '}
+              {name}
+              ,
+            </Typography>
             <Input onChange={requestSearch} searchable />
             <Paper style={{
               marginTop: 30, borderRadius: 10, display: 'block', overflow: 'auto',
@@ -151,7 +173,7 @@ export default function FlagsTable(): React.ReactElement {
       >
         <Box sx={style}>
           <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={4} style={{ display: 'flex', alignItems: 'center' }}>
               <Grid
                 container
                 direction="column"
@@ -172,7 +194,7 @@ export default function FlagsTable(): React.ReactElement {
                   <Input
                     disabled={typeModal === 'view'}
                     inputLabel="Nome"
-                    onChange={setTeste}
+                    onChange={(e) => handleInputChange(e, 'name')}
                     defaultValue={selected?.nome}
                   />
                 </Grid>
@@ -207,6 +229,16 @@ export default function FlagsTable(): React.ReactElement {
                     onChange={setTeste}
                     defaultValue={selected?.tld}
                   />
+                </Grid>
+                <Grid item sm={12}>
+                  <Button
+                    variant="contained"
+                    style={{ float: 'right' }}
+                    endIcon={<SendIcon />}
+                    onClick={onPressButton}
+                  >
+                    Continuar
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>

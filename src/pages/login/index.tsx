@@ -18,7 +18,6 @@ export default function BasicCard(): React.ReactElement {
 
   const onPressButton = (): void => {
     allMutations.editName(nome);
-    console.log('entreiii');
     setRedirect(true);
   };
 
