@@ -60,6 +60,7 @@ const FlagsTable: FC<params> = ({
 
   useEffect(() => {
     setRows(countries);
+    allMutations.addCountries(countries);
   }, [loading]);
 
   const requestSearch = (searchedVal: string): void => {
@@ -75,8 +76,8 @@ const FlagsTable: FC<params> = ({
     setOpen(true);
   };
 
-  const onPressButton = (): void => {
-    if (selected) {
+  const onPressButton = (type: string): void => {
+    if (type === 'edit' && selected) {
       setRows(allMutations.editCountries(selected));
     }
     setOpen(false);
@@ -84,6 +85,11 @@ const FlagsTable: FC<params> = ({
 
   const handleInputChange = (e: string, index: string): void => {
     const newValue = { ...selected, [index]: e.trim() } as countriesTypes;
+    setSelected(newValue);
+  };
+
+  const handleNumberChange = (e: string, index: string): void => {
+    const newValue = { ...selected, [index]: parseInt(e, 10) } as countriesTypes;
     setSelected(newValue);
   };
 
@@ -232,16 +238,17 @@ const FlagsTable: FC<params> = ({
                     disabled={typeModal === 'view'}
                     id={`InputArea-${selected?.name}`}
                     inputLabel="Área"
-                    onChange={(e) => handleInputChange(e, 'area')}
+                    onChange={(e) => handleNumberChange(e, 'area')}
                     defaultValue={selected?.area}
                   />
                 </Grid>
                 <Grid item sm={4}>
                   <Input
                     disabled={typeModal === 'view'}
+                    type="number"
                     id={`InputPopulacao-${selected?.name}`}
                     inputLabel="População"
-                    onChange={(e) => handleInputChange(e, 'populacao')}
+                    onChange={(e) => handleNumberChange(e, 'population')}
                     defaultValue={selected?.population}
                   />
                 </Grid>
@@ -250,7 +257,7 @@ const FlagsTable: FC<params> = ({
                     disabled={typeModal === 'view'}
                     id={`InputDominio-${selected?.name}`}
                     inputLabel="Domínio"
-                    onChange={(e) => handleInputChange(e, 'tld')}
+                    onChange={(e) => handleInputChange(e, 'demonym')}
                     defaultValue={selected?.demonym}
                   />
                 </Grid>
@@ -259,7 +266,7 @@ const FlagsTable: FC<params> = ({
                     variant="contained"
                     style={{ float: 'right' }}
                     endIcon={typeModal === 'view' ? <CloseIcon /> : <SendIcon />}
-                    onClick={() => setOpen(false)}
+                    onClick={() => onPressButton(typeModal)}
                     color={typeModal === 'view' ? 'error' : 'primary'}
                   >
                     {typeModal === 'view' ? 'Fechar' : 'Salvar'}

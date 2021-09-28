@@ -12,7 +12,7 @@ function delay(n: number): any {
 
 describe('When entering the flags page', () => {
   it('passing name to the flags page', () => {
-    render(<App />);
+    render(<App test />);
     const inputElement = screen.getByTestId('input-name') as HTMLInputElement;
     const buttonElement = screen.getByTestId('buttonLogin') as HTMLButtonElement;
     fireEvent.change(inputElement, { target: { value: 'name-teste' } });
@@ -22,7 +22,7 @@ describe('When entering the flags page', () => {
   });
 
   it('If entered a name', async () => {
-    render(<App />);
+    render(<App test />);
 
     const inputElement = screen.getByTestId('inputFlagsSearch') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: 'Brasil' } });
@@ -34,7 +34,7 @@ describe('When entering the flags page', () => {
   });
 
   it('When you click on see you must open modal', async () => {
-    render(<App />);
+    render(<App test />);
 
     const inputElement = screen.getByTestId('inputFlagsSearch') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: 'Brasil' } });
@@ -46,7 +46,7 @@ describe('When entering the flags page', () => {
   });
 
   it('When clicking on edit you must open modal', () => {
-    render(<App />);
+    render(<App test />);
     const inputElement = screen.getByTestId('inputFlagsSearch') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: 'Brasil' } });
     const buttonEdit = screen.getByTestId('ButtonEdit-Brasil') as HTMLButtonElement;
@@ -57,7 +57,7 @@ describe('When entering the flags page', () => {
   });
 
   it('Check modal fields when clicking view', () => {
-    render(<App />);
+    render(<App test />);
     const inputElement = screen.getByTestId('inputFlagsSearch') as HTMLInputElement;
     fireEvent.change(inputElement, { target: { value: 'Brasil' } });
     const buttonView = screen.getByTestId('ButtonView-Brasil') as HTMLButtonElement;

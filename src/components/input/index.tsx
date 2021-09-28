@@ -15,6 +15,7 @@ interface inputParams {
   inputLabel?: string,
   defaultValue?: string,
   id?: string,
+  type?: string
 }
 
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
@@ -49,6 +50,7 @@ const Input: FC<inputParams> = ({
   inputLabel,
   defaultValue,
   id,
+  type,
 }) => {
   if (searchable) {
     return (
@@ -85,6 +87,7 @@ const Input: FC<inputParams> = ({
         </InputLabel>
       )}
       <BootstrapInput
+        type={type || 'text'}
         disabled={disabled || false}
         placeholder={placeholder || ''}
         onChange={(e) => onChange(e.target.value)}
