@@ -64,6 +64,10 @@ const Input: FC<inputParams> = ({
           placeholder={placeholder || 'Digite Para Pesquisar'}
           onChange={(e) => onChange(e.target.value)}
           defaultValue={defaultValue || ''}
+          inputProps={{
+            'data-testid': id || '',
+            id,
+          }}
         />
         <IconButton sx={{ p: '10px' }} aria-label="search">
           <SearchIcon />
@@ -87,6 +91,7 @@ const Input: FC<inputParams> = ({
         defaultValue={defaultValue || ''}
         inputProps={{
           'data-testid': id || '',
+          id,
         }}
       />
     </FormControl>

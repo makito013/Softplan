@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Flag from 'react-world-flags';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
@@ -40,9 +40,16 @@ const style = {
   p: 4,
 };
 
-export default function FlagsTable(): React.ReactElement {
-  const countries = useQuery(GET_COUNTRIES);
-  const [rows, setRows] = useState<countriesTypes[]>(countries.data.countries);
+interface params {
+  countries: countriesTypes[],
+  loading: boolean
+}
+
+const FlagsTable: FC<params> = ({
+  countries,
+  loading,
+}) => {
+  const [rows, setRows] = useState<countriesTypes[]>();
   const [selected, setSelected] = useState<countriesTypes>();
   const [searched, setSearched] = useState<string>('');
   const [open, setOpen] = React.useState<boolean>(false);
@@ -51,9 +58,13 @@ export default function FlagsTable(): React.ReactElement {
   const [typeModal, setTypeModal] = React.useState<string>('view');
   const { name } = useQuery(GET_NAME).data;
 
+  useEffect(() => {
+    setRows(countries);
+  }, [loading]);
+
   const requestSearch = (searchedVal: string): void => {
-    let filteredRows = countries.data.countries.filter((row: countriesTypes) => row?.nome.toLowerCase().includes(searchedVal.toLowerCase()));
-    if (filteredRows?.length === 0) filteredRows = countries.data.countries.filter((row: countriesTypes) => row?.sigla3.toLowerCase().includes(searchedVal.toLowerCase()));
+    let filteredRows = countries?.filter((row: countriesTypes) => row?.name.toLowerCase().includes(searchedVal.toLowerCase()));
+    if (filteredRows?.length === 0) filteredRows = countries?.filter((row: countriesTypes) => row?.alpha3Code.toLowerCase().includes(searchedVal.toLowerCase()));
     setResult(0);
     setRows(filteredRows);
   };
@@ -95,13 +106,13 @@ export default function FlagsTable(): React.ReactElement {
         }}
         >
           <CardContent>
-            <Typography variant="h5" component="div">
+            <Typography variant="h5" component="div" data-testid="named">
               Olá
               {' '}
               {name}
               ,
             </Typography>
-            <Input onChange={requestSearch} searchable />
+            <Input onChange={requestSearch} searchable id="inputFlagsSearch" />
             <Paper style={{
               marginTop: 30, borderRadius: 10, display: 'block', overflow: 'auto',
             }}
@@ -117,12 +128,12 @@ export default function FlagsTable(): React.ReactElement {
                       <TableCell align="right" />
                     </TableRow>
                   </TableHead>
-                  <TableBody>
-                    {rows.map((row, key) => {
+                  <TableBody data-testid="tableFlags">
+                    {rows?.map((row, key) => {
                       if (key >= result + 5) {
                         if (key === result + 5) {
                           return (
-                            <TableRow style={{ cursor: 'pointer' }} onClick={() => setResult(result + 5)}>
+                            <TableRow key={key.toString()} style={{ cursor: 'pointer' }} onClick={() => setResult(result + 5)}>
                               <TableCell />
                               <TableCell align="left">
                                 Próximos 5 resultados
@@ -133,28 +144,29 @@ export default function FlagsTable(): React.ReactElement {
                             </TableRow>
                           );
                         }
-                        return <></>;
+                        return null;
                       }
                       return (
-                        <TableRow key={row.nome}>
+                        <TableRow data-testid={`tableRow-${row.name}`} key={key.toString()}>
                           <TableCell width={30} align="left">
-                            <Flag code={row.sigla3} height="16" />
+                            <Flag code={row.alpha3Code} height="16" />
                           </TableCell>
-                          <TableCell component="th" scope="row">
-                            {row.nome}
+                          <TableCell component="th">
+                            {row.name}
                           </TableCell>
-                          <TableCell component="th" scope="row">
+                          <TableCell component="th">
                             {row?.capital || 'Essa é uma capital'}
                           </TableCell>
-                          <TableCell align="right">{row.sigla2}</TableCell>
+                          <TableCell align="right">{row.alpha2Code}</TableCell>
                           <TableCell align="right">
                             <Tooltip title="Ver">
-                              <IconButton sx={{ p: '10px' }} onClick={() => selectCountry(row, 'view')}>
+                              <IconButton data-testid={`ButtonView-${row.name}`} sx={{ p: '10px' }} onClick={() => selectCountry(row, 'view')}>
                                 <RemoveRedEyeIcon />
                               </IconButton>
                             </Tooltip>
                             <Tooltip title="Editar">
                               <IconButton
+                                data-testid={`ButtonEdit-${row.name}`}
                                 sx={{ p: '10px' }}
                                 onClick={() => selectCountry(row, 'edit')}
                               >
@@ -176,6 +188,7 @@ export default function FlagsTable(): React.ReactElement {
         open={open}
         onClose={() => setOpen(false)}
         style={{ top: '350px' }}
+        data-testid={`Modal-${selected?.name}`}
       >
         <Box sx={style}>
           <Grid container spacing={2}>
@@ -186,27 +199,29 @@ export default function FlagsTable(): React.ReactElement {
                 justifyContent="center"
                 alignItems="center"
               >
-                <Flag code={selected?.sigla3} height="100%" />
+                <Flag code={selected?.alpha3Code} height="100%" />
               </Grid>
             </Grid>
             <Grid item xs={8}>
               <Grid container spacing={2}>
                 <Grid item sm={12}>
-                  <Typography id="modal-modal-title" variant="h6" component="h2">
-                    {selected?.nome}
+                  <Typography data-testid={`Label-${selected?.name}`} id="modal-modal-title" variant="h6" component="h2">
+                    {selected?.name}
                   </Typography>
                 </Grid>
                 <Grid item sm={6}>
                   <Input
                     disabled
+                    id={`InputName-${selected?.name}`}
                     inputLabel="Nome"
                     onChange={(e) => handleInputChange(e, 'nome')}
-                    defaultValue={selected?.nome}
+                    defaultValue={selected?.name}
                   />
                 </Grid>
                 <Grid item sm={6}>
                   <Input
                     disabled={typeModal === 'view'}
+                    id={`InputCapital-${selected?.name}`}
                     inputLabel="Capital"
                     onChange={(e) => handleInputChange(e, 'capital')}
                     defaultValue={selected?.capital}
@@ -215,6 +230,7 @@ export default function FlagsTable(): React.ReactElement {
                 <Grid item sm={4}>
                   <Input
                     disabled={typeModal === 'view'}
+                    id={`InputArea-${selected?.name}`}
                     inputLabel="Área"
                     onChange={(e) => handleInputChange(e, 'area')}
                     defaultValue={selected?.area}
@@ -223,17 +239,19 @@ export default function FlagsTable(): React.ReactElement {
                 <Grid item sm={4}>
                   <Input
                     disabled={typeModal === 'view'}
+                    id={`InputPopulacao-${selected?.name}`}
                     inputLabel="População"
                     onChange={(e) => handleInputChange(e, 'populacao')}
-                    defaultValue={selected?.populacao}
+                    defaultValue={selected?.population}
                   />
                 </Grid>
                 <Grid item sm={4}>
                   <Input
                     disabled={typeModal === 'view'}
+                    id={`InputDominio-${selected?.name}`}
                     inputLabel="Domínio"
                     onChange={(e) => handleInputChange(e, 'tld')}
-                    defaultValue={selected?.tld}
+                    defaultValue={selected?.demonym}
                   />
                 </Grid>
                 <Grid item sm={12}>
@@ -241,7 +259,7 @@ export default function FlagsTable(): React.ReactElement {
                     variant="contained"
                     style={{ float: 'right' }}
                     endIcon={typeModal === 'view' ? <CloseIcon /> : <SendIcon />}
-                    onClick={onPressButton}
+                    onClick={() => setOpen(false)}
                     color={typeModal === 'view' ? 'error' : 'primary'}
                   >
                     {typeModal === 'view' ? 'Fechar' : 'Salvar'}
@@ -254,4 +272,6 @@ export default function FlagsTable(): React.ReactElement {
       </Modal>
     </>
   );
-}
+};
+
+export default FlagsTable;

@@ -52,6 +52,8 @@ export default function Login(): React.ReactElement {
               style={{ float: 'right' }}
               endIcon={<SendIcon />}
               onClick={onPressButton}
+              id="buttonLogin"
+              data-testid="buttonLogin"
             >
               Continuar
             </Button>

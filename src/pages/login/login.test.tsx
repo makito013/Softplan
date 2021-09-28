@@ -1,16 +1,24 @@
 import React from 'react';
 import {
-  render, screen, fireEvent, waitFor,
+  render, screen, fireEvent,
 } from '@testing-library/react';
 import Login from './index';
 
 describe('Login Test', () => {
-  it('If entered a name', async () => {
+  it('should render input element', () => {
     render(<Login />);
-    const fieldNode = await waitFor(() => screen.getByTestId('input-name'));
+    const inputElement = screen.getByTestId('input-name') as HTMLInputElement;
+    const buttonElement = screen.getByTestId('buttonLogin') as HTMLInputElement;
+    expect(inputElement).toBeInTheDocument();
+    expect(buttonElement).toBeInTheDocument();
+  });
+
+  it('If entered a name', () => {
+    render(<Login />);
+    const inputElement = screen.getByTestId('input-name') as HTMLInputElement;
+    const buttonElement = screen.getByTestId('buttonLogin') as HTMLInputElement;
     // const fieldNode = await waitForElement(() => getByTestId('form-field'));
-    console.log(fieldNode);
-    fireEvent.change(fieldNode, { target: { value: 'name-teste' } });
-    console.log(fieldNode);
+    fireEvent.change(inputElement, { target: { value: 'name-teste' } });
+    expect(inputElement.value).toBe('name-teste');
   });
 });

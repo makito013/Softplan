@@ -22,7 +22,7 @@ export const cache: InMemoryCache = new InMemoryCache({
         },
         countries: {
           read() {
-            return flagsVar();
+            // return flagsVar();
           },
         },
       },
