@@ -5,7 +5,7 @@ Sistema de busca de informações sobre países
 
 ## Scripts
 
-### `yarn isntall`
+### `yarn install`
 
 Instala o projeto
 
